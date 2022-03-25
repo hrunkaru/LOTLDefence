@@ -1,5 +1,5 @@
 $pathToPathsCSV = "LOLBAS_filepaths.csv"
-$outfile = "LOTLInfo_$(Get-Date -UFormat "%Y-%m-%d_%H-%m-%S").csv"
+$outfile = "LOTLInfo_$(Get-Date -UFormat "%Y-%m-%d_%H-%M-%S").csv"
 
 $data = import-csv $pathToPathsCSV
 $outputdata = @()
