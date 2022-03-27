@@ -1,5 +1,4 @@
-$pathToPathsCSV = "LOLBAS_filepaths.csv"
-$outfile = "LOTLInfo_$(Get-Date -UFormat "%Y-%m-%d_%H-%M-%S").csv"
+param ($pathToPathsCSV = "LOLBAS_filepaths.csv", $outfile = "LOTLInfo_$(Get-Date -UFormat "%Y-%m-%d_%H-%M-%S").csv")
 
 $data = import-csv $pathToPathsCSV
 $outputdata = @()
@@ -37,3 +36,5 @@ $data  | ForEach-Object {
 write-debug "Total existing paths in the system: $countTestPath"
 $outputdata | Export-Csv -Path $outfile -NoTypeInformation
 write-debug "Total items in output data: $($outputdata | Measure-Object | Select-Object -expandproperty count)"
+
+write-host "All done, find the output at: $outfile" 
