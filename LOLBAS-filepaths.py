@@ -3,6 +3,9 @@ from pathlib import Path
 import yaml
 # pip3 install pyyml to install module 'yaml'
 import csv
+import argparse
+import time
+
 
 def cleanYAMLlastline(data):
     if (data[-1:][0] == "---\n"):
@@ -42,7 +45,6 @@ def createCSVsummary(filepaths_list):
                 common_values.append(data['Description'] if all(['Description' in data, len(str(data['Description'])) > 1]) else "N/A")
                 try:
                     for fpath in data['Full_Path']:
-                        print(fpath)
                         write_values = []
                         write_values.extend(common_values)
                         if fpath['Path']:
@@ -64,17 +66,31 @@ def createCSVsummary(filepaths_list):
 
 
 if __name__ == "__main__":
-
-    # TODO: Add commandline argument parsing to replace hardcoded parameters
+    # Get and parse arguments
+    parser = argparse.ArgumentParser(description="Parser script to collect filepaths from LOLBAS project YAML files. \nLOLBAS Project: https://github.com/LOLBAS-Project/LOLBAS \nParser script from: https://github.com/hrunkaru/LOTLDefence",
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-o", "--output", help="Output CSV file path (default is current folder)")
+    parser.add_argument("-s", "--src", help="Path to local copy of LOLBAS project", required=True)
+    args = parser.parse_args()
 
     # path to local copy of LOLBAS project files from this project:
     # https://github.com/LOLBAS-Project/LOLBAS
-    pathToLOLBAS = "LOLBAS-data/LOLBAS-master"
+    pathToLOLBAS = args.src
+    # path to yml files in the LOLBAS project
     pathToYAMLs = Path(pathToLOLBAS, "yml")
-    pathToOutputCSV = 'LOLBAS_filepaths.csv'
+
+    # output file name and path
+    timestr = time.strftime("_%Y%m%d_%H%M%S")
+    if(args.output):
+        pathToOutputCSV = args.output
+    else:
+        pathToOutputCSV = 'LOLBAS_filepaths' + timestr + '.csv'
     
     # create list of filepaths to iterate
     filepaths = createFilepaths(pathToYAMLs)
 
     # create CSV summary of LOLBAS yaml files
     createCSVsummary(filepaths)
+
+    # print output when done
+    print("Parsing done. Find the output file at: \n" + pathToOutputCSV)
