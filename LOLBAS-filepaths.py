@@ -41,7 +41,6 @@ def createCSVsummary(filepaths_list):
                 common_values.append(data['Name'] if ('Name' in data) else "N/A")
                 common_values.append(data['Description'] if all(['Description' in data, len(str(data['Description'])) > 1]) else "N/A")
                 try:
-                #if data['Full_Path']:
                     for fpath in data['Full_Path']:
                         print(fpath)
                         write_values = []
@@ -54,7 +53,6 @@ def createCSVsummary(filepaths_list):
                         else:
                             write_values.append("N/A")
                         writer.writerow(write_values)
-                #else:
                 except:
                     write_values = []
                     write_values.extend(common_values)
