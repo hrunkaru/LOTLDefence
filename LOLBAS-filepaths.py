@@ -21,12 +21,16 @@ def createFilepaths(pathToYamls):
             filepaths.append(str((Path(dir, filename))))
     return filepaths
 
-def createCSVsummary(filepaths_list):
+def createCSVsummary(filepaths_list, add_block_policy):
     with open (pathToOutputCSV, 'w') as csv_out:
 
         #Create CSV header
         writer = csv.writer(csv_out)
-        writer.writerow(["Category", "Name", "Description", "Path"])
+        if(add_block_policy):
+            writer.writerow(["Category", "Name", "Description", "Path", "Block in WDAC/AppLocker"])
+        else:
+            writer.writerow(["Category", "Name", "Description", "Path"])
+
 
         for file in filepaths_list:
             splitname = file.split(".")
@@ -43,6 +47,7 @@ def createCSVsummary(filepaths_list):
                 common_values.append(recordtype)
                 common_values.append(data['Name'] if ('Name' in data) else "N/A")
                 common_values.append(data['Description'] if all(['Description' in data, len(str(data['Description'])) > 1]) else "N/A")
+                
                 try:
                     for fpath in data['Full_Path']:
                         write_values = []
@@ -71,6 +76,7 @@ if __name__ == "__main__":
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-o", "--output", help="Output CSV file path (default is current folder)")
     parser.add_argument("-s", "--src", help="Path to local copy of LOLBAS project", required=True)
+    parser.add_argument("-p", "--policyprep", action='store_true', help="Add column to CSV to mark rules for blocking in policy creator scripts.")
     args = parser.parse_args()
 
     # path to local copy of LOLBAS project files from this project:
@@ -88,9 +94,13 @@ if __name__ == "__main__":
     
     # create list of filepaths to iterate
     filepaths = createFilepaths(pathToYAMLs)
+    
 
     # create CSV summary of LOLBAS yaml files
-    createCSVsummary(filepaths)
+    if(args.policyprep):
+        createCSVsummary(filepaths, True)
+    else:
+        createCSVsummary(filepaths)
 
     # print output when done
     print("Parsing done. Find the output file at: \n" + pathToOutputCSV)
