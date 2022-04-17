@@ -34,7 +34,8 @@ def createWDACPolicy(csv_in):
         for row in data:
             if(row[3] == "WDAC"):
             
-                IDstr =  'ID_DENY_LOLBAS_' + str(IDcount) + '_' + row[0]
+                #IDstr =  'ID_DENY_LOLBAS_' + str(IDcount) + '_' + row[0]
+                IDstr =  'ID_DENY_LOLBAS_' + row[0].upper() + '_' +str(IDcount)
                 IDcount += 1
                 FriendlyName = row[1]
                 FilePath = row[4]
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     if(args.wdacoutput):
         WDACOutput = 'args.wdacoutput'
     else:
-        WDACOutput = 'WDAC_policy_' + timestr + '.xml'
+        WDACOutput = 'WDAC_policy' + timestr + '.xml'
 
 
     # Create data to output
