@@ -32,13 +32,13 @@ def createWDACPolicy(csv_in):
         data = csv.reader(input_csv)
         IDcount = 1
         for row in data:
-            if(row[3] == "WDAC"):
+            if(row[4] == "WDAC"):
             
                 #IDstr =  'ID_DENY_LOLBAS_' + str(IDcount) + '_' + row[0]
                 IDstr =  'ID_DENY_LOLBAS_' + row[0].upper() + '_' +str(IDcount)
                 IDcount += 1
                 FriendlyName = row[1]
-                FilePath = row[4]
+                FilePath = row[3]
 
                 FileRules += f'\t\t<Deny ID="{IDstr}" FriendlyName="{FriendlyName}" FilePath="{FilePath}" />\n'
 
