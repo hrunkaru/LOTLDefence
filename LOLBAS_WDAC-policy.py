@@ -79,3 +79,4 @@ if __name__ == "__main__":
     # Save output to file
     with open (WDACOutput, 'w') as policy_out:
         policy_out.write(output_data)
+        print("All done, find output file at: " + WDACOutput)
