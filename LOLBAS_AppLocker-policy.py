@@ -189,7 +189,7 @@ def createAppLockerPolicy(csv_in):
                     rule = filePathRule.format(uuid = str(uuid.uuid4()), filename = FileName, description = "Rule automatically created by LOLBAS_AppLocker-policy.py script", sid = args.sid, filepath = FilePath)
                     DLLsRules += rule
 
-    if(args.includepublisher):    
+    if not (args.excludepublisher):    
         if(args.excludedefaults):
             output = xml_template.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule=xml_publisherrule.format(uuid=str(uuid.uuid4()), sid=args.sid))
         else:
@@ -208,8 +208,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Helper script to create policy XML for AppLocker from CSV input, script is from: https://github.com/hrunkaru/LOTLDefence",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-o", "--output", help="Output XML file path for AppLocker policy (default is current folder)")
-    parser.add_argument("-e", "--excludedefaults", help="Exclude default AppLocker rules. Strongly suggested to include default rules, unless similar rules are in existing policy you plan to merge this one with.", default=False)
-    parser.add_argument("-p", "--includepublisher", help="Include Publisher rule to block Microsoft signed binaries from non-native locations.", default=True, action='store_false')
+    parser.add_argument("-e", "--excludedefaults", help="Exclude default AppLocker rules. Strongly suggested to include default rules, unless similar rules are in existing policy you plan to merge this one with.", default=False, action='store_true')
+    parser.add_argument("-p", "--excludepublisher", help="Exclude Publisher rule to block Microsoft signed binaries from non-native locations.", default=False, action='store_true')
     parser.add_argument("-s", "--src", help="Path to CSV output from LOLBAS-filepaths.py script (-p switch), where required rows are marked with AppLocker or WDAC manually", required=True)
     parser.add_argument("-t", "--sid", help="Target SID group for the created AppLocker policies.", required=True) # Add argument for user/group SID
     args = parser.parse_args()
