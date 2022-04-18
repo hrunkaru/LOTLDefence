@@ -27,9 +27,9 @@ def createCSVsummary(filepaths_list, add_block_policy):
         #Create CSV header
         writer = csv.writer(csv_out)
         if(add_block_policy):
-            writer.writerow(["Category", "Name", "Description", "Path", "Block in WDAC/AppLocker"])
+            writer.writerow(["Category", "Name", "Description", "Path", "Block in WDAC/AppLocker", "Privileges"])
         else:
-            writer.writerow(["Category", "Name", "Description", "Path"])
+            writer.writerow(["Category", "Name", "Description", "Path", "Privileges"])
 
 
         for file in filepaths_list:
@@ -59,11 +59,17 @@ def createCSVsummary(filepaths_list, add_block_policy):
                                 write_values.append("N/A")
                         else:
                             write_values.append("N/A")
+                        if(add_block_policy):
+                            write_values.append("")
+                        write_values.append(data['Commands'][0]['Privileges'] if ('Privileges' in data['Commands'][0]) else "N/A")
                         writer.writerow(write_values)
                 except:
                     write_values = []
                     write_values.extend(common_values)
                     write_values.append("N/A")
+                    if(add_block_policy):
+                        write_values.append("")
+                    write_values.append(data['Commands'][0]['Privileges'] if ('Privileges' in data['Commands'][0]) else "N/A")
                     writer.writerow(write_values)
 
 
