@@ -5,18 +5,36 @@ import uuid
 
 def createAppLockerPolicy(csv_in):
 
+    xml_publisherrule = """\
+<FilePublisherRule Id="{uuid}" Name="Signed by O=MICROSOFT CORPORATION, L=REDMOND, S=WASHINGTON, C=US" Description="Block Microsoft signed file execution outside of allowed locations (exceptions)" UserOrGroupSid="{sid}" Action="Deny">
+    <Conditions>
+    <FilePublisherCondition PublisherName="O=MICROSOFT CORPORATION, L=REDMOND, S=WASHINGTON, C=US" ProductName="*" BinaryName="*">
+        <BinaryVersionRange LowSection="*" HighSection="*" />
+    </FilePublisherCondition>
+    </Conditions>
+    <Exceptions>
+    <FilePathCondition Path="%OSDRIVE%\ProgramData\*" />
+    <FilePathCondition Path="%PROGRAMFILES%\*" />
+    <FilePathCondition Path="%WINDIR%\*" />
+    </Exceptions>
+</FilePublisherRule>\
+    """
+
     xml_template = """\
 <AppLockerPolicy Version="1">
   <RuleCollection Type="Exe" EnforcementMode="NotConfigured">
+    {XMLPublisherRule}
     {XMLExecRules}
   </RuleCollection>
   <RuleCollection Type="Msi" EnforcementMode="NotConfigured">
     {XMLWinInstRules}
   </RuleCollection>
   <RuleCollection Type="Script" EnforcementMode="NotConfigured">
+    {XMLPublisherRule}
     {XMLScriptRules}
   </RuleCollection>
   <RuleCollection Type="Dll" EnforcementMode="NotConfigured">
+    {XMLPublisherRule}
     {XMLDLLsRules}
   </RuleCollection>
   <RuleCollection Type="Appx" EnforcementMode="NotConfigured" />
@@ -26,6 +44,7 @@ def createAppLockerPolicy(csv_in):
     xml_template_defaults = """\
 <AppLockerPolicy Version="1">
   <RuleCollection Type="Exe" EnforcementMode="NotConfigured">
+    {XMLPublisherRule}
     <FilePathRule Id="921cc481-6e17-4653-8f75-050b80acca20" Name="(Default Rule) All files located in the Program Files folder" Description="Allows members of the Everyone group to run applications that are located in the Program Files folder." UserOrGroupSid="S-1-1-0" Action="Allow">
       <Conditions>
         <FilePathCondition Path="%PROGRAMFILES%\*" />
@@ -64,6 +83,7 @@ def createAppLockerPolicy(csv_in):
     {XMLWinInstRules}
   </RuleCollection>
   <RuleCollection Type="Script" EnforcementMode="NotConfigured">
+    {XMLPublisherRule}
     <FilePathRule Id="06dce67b-934c-454f-a263-2515c8796a5d" Name="(Default Rule) All scripts located in the Program Files folder" Description="Allows members of the Everyone group to run scripts that are located in the Program Files folder." UserOrGroupSid="S-1-1-0" Action="Allow">
       <Conditions>
         <FilePathCondition Path="%PROGRAMFILES%\*" />
@@ -82,6 +102,7 @@ def createAppLockerPolicy(csv_in):
     {XMLScriptRules}
   </RuleCollection>
   <RuleCollection Type="Dll" EnforcementMode="NotConfigured">
+    {XMLPublisherRule}
     <FilePathRule Id="bac4b0bf-6f1b-40e8-8627-8545fa89c8b6" Name="(Default Rule) Microsoft Windows DLLs" Description="Allows members of the Everyone group to load DLLs located in the Windows folder." UserOrGroupSid="S-1-1-0" Action="Allow">
       <Conditions>
         <FilePathCondition Path="%WINDIR%\*" />
@@ -168,11 +189,16 @@ def createAppLockerPolicy(csv_in):
                     rule = filePathRule.format(uuid = str(uuid.uuid4()), filename = FileName, description = "Rule automatically created by LOLBAS_AppLocker-policy.py script", sid = args.sid, filepath = FilePath)
                     DLLsRules += rule
 
-
-    if(args.excludedefaults):
-        output = xml_template.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules)
+    if(args.includepublisher):    
+        if(args.excludedefaults):
+            output = xml_template.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule=xml_publisherrule.format(uuid=str(uuid.uuid4()), sid=args.sid))
+        else:
+            output = xml_template_defaults.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule=xml_publisherrule.format(uuid=str(uuid.uuid4()), sid=args.sid))
     else:
-        output = xml_template_defaults.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules)
+        if(args.excludedefaults):
+            output = xml_template.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule="")
+        else:
+            output = xml_template_defaults.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule="")
     return output
 
 
@@ -183,6 +209,7 @@ if __name__ == "__main__":
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-o", "--output", help="Output XML file path for AppLocker policy (default is current folder)")
     parser.add_argument("-e", "--excludedefaults", help="Exclude default AppLocker rules. Strongly suggested to include default rules, unless similar rules are in existing policy you plan to merge this one with.", default=False)
+    parser.add_argument("-p", "--includepublisher", help="Include Publisher rule to block Microsoft signed binaries from non-native locations.", default=True, action='store_false')
     parser.add_argument("-s", "--src", help="Path to CSV output from LOLBAS-filepaths.py script (-p switch), where required rows are marked with AppLocker or WDAC manually", required=True)
     parser.add_argument("-t", "--sid", help="Target SID group for the created AppLocker policies.", required=True) # Add argument for user/group SID
     args = parser.parse_args()
