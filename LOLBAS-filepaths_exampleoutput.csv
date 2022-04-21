@@ -31,8 +31,8 @@ OSLibraries,Ieadvpack.dll,INF installer for Internet Explorer. Has much of the s
 OSLibraries,Ieadvpack.dll,INF installer for Internet Explorer. Has much of the same functionality as advpack.dll.,c:\windows\syswow64\ieadvpack.dll,,User
 OSLibraries,Ieaframe.dll,Internet Browser DLL for translating HTML code.,c:\windows\system32\ieframe.dll,,User
 OSLibraries,Ieaframe.dll,Internet Browser DLL for translating HTML code.,c:\windows\syswow64\ieframe.dll,,User
-OSLibraries,Advpack.dll,Utility for installing software and drivers with rundll32.exe,c:\windows\system32\advpack.dll,,User
-OSLibraries,Advpack.dll,Utility for installing software and drivers with rundll32.exe,c:\windows\syswow64\advpack.dll,,User
+OSLibraries,Advpack.dll,Utility for installing software and drivers with rundll32.exe,c:\windows\system32\advpack.dll,AppLocker,User
+OSLibraries,Advpack.dll,Utility for installing software and drivers with rundll32.exe,c:\windows\syswow64\advpack.dll,AppLocker,User
 OSLibraries,Syssetup.dll,Windows NT System Setup,c:\windows\system32\syssetup.dll,,User
 OSLibraries,Syssetup.dll,Windows NT System Setup,c:\windows\syswow64\syssetup.dll,,User
 OSLibraries,Shell32.dll,Windows Shell Common Dll,c:\windows\system32\shell32.dll,,User
