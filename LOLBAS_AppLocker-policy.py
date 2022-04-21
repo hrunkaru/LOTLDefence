@@ -188,12 +188,6 @@ def createAppLockerPolicy(csv_in):
                     rule = filePathRule.format(uuid = str(uuid.uuid4()), filename = FileName, description = "Rule automatically created by LOLBAS_AppLocker-policy.py script", sid = args.sid, filepath = FilePath)
                     DLLsRules += rule
 
-    #if not (args.excludepublisher):    
-    #    if(args.excludedefaults):
-    #        output = xml_template.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule=xml_publisherrule.format(uuid=str(uuid.uuid4()), sid=args.sid))
-    #    else:
-    #        output = xml_template_defaults.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules, XMLPublisherRule=xml_publisherrule.format(uuid=str(uuid.uuid4()), sid=args.sid))
-    #else:
     if(args.excludedefaults):
         output = xml_template.format(XMLExecRules=ExecRules, XMLWinInstRules=WinInstRules, XMLScriptRules=ScriptsRules, XMLDLLsRules=DLLsRules)
     else:
