@@ -28,21 +28,22 @@ def createWDACPolicy(csv_in):
     FileRules = ''
     FileRulesRef = ''
 
+    FileNameSet = set()
+
     with open(csv_in) as input_csv:
         data = csv.reader(input_csv)
-        IDcount = 1
+        IDcount = 0
         for row in data:
             if(row[4] == "WDAC"):
-            
-                #IDstr =  'ID_DENY_LOLBAS_' + str(IDcount) + '_' + row[0]
-                IDstr =  'ID_DENY_LOLBAS_' + row[0].upper() + '_' +str(IDcount)
-                IDcount += 1
                 FriendlyName = row[1]
-                FilePath = row[3]
+                FileNameSet.add(FriendlyName)
 
-                FileRules += f'\t\t<Deny ID="{IDstr}" FriendlyName="{FriendlyName}" FilePath="{FilePath}" />\n'
+        for Item in FileNameSet:
+            IDcount += 1
+            IDstr =  'ID_DENY_LOLBAS_' + str(IDcount)
+            FileRules += f'\t\t<Deny ID="{IDstr}" FriendlyName="{Item}" FileName="{Item}" MinimumFileVersion="65535.65535.65535.65535" />\n'
+            FileRulesRef += f'\t\t<FileRuleRef RuleID="{IDstr}" />\n'
 
-                FileRulesRef += f'\t\t<FileRuleRef RuleID="{IDstr}" />\n'
 
     output = xml_template.format(FRules=FileRules, FRulesRef=FileRulesRef)
     return output
